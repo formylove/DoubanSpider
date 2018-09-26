@@ -76,7 +76,7 @@ def process_page(url,tag):
             if len(pub_info_el)!=0:
                 pub_info=pub_info_el[0].replace(' ',"").replace('\n','')
 
-                publisher_pattern=re.compile(r'/[^\d/]+/\d{4}-')
+                publisher_pattern=re.compile(r'/[^\d/]+/\d{4}[-年]')
                 publishers=publisher_pattern.findall(pub_info)
                 publisher=publishers[0][1:-6].strip().replace("'",'') if len(publishers)!=0 and len(publishers[0])>6 else ''
 
@@ -84,11 +84,11 @@ def process_page(url,tag):
                 authors=author_pattern.findall(pub_info)
                 author=authors[0][:-1].strip().replace("'",'') if len(authors)!=0 else ''
 
-                year_pattern=re.compile('/\d{4}-')
+                year_pattern=re.compile('/\d{4}[-年]')
                 year = year_pattern.search(pub_info).group()[1:-1] if year_pattern.search(pub_info) != None else '0000'
 
-                price_pattern=re.compile('\d+\.\d+')
-                price =price_pattern.search(pub_info).group() if price_pattern.search(pub_info)!=None else 0
+                price_pattern=re.compile('(\d+\.\d+)|(\d+$)|(\\d+\.\d+(?=元$))')
+                price =price_pattern.search(pub_info.replace('CNY','')).group() if price_pattern.search(pub_info.replace('CNY',''))!=None else 0
                 price =int(float(price))
             else:price=0;pub_year='0000';publisher=''
             t_commentedNum = elm.xpath('../../div[contains(@class,"star")]/span[contains(@class,"pl")]/text()')
